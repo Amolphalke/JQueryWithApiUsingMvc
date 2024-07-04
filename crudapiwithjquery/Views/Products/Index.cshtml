@@ -1,0 +1,63 @@
+﻿@model List<crudapiwithjquery.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+}
+
+<h1>Products</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
+</p>
+
+<table id="productsTable" class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th class="col-4">Name</th>
+            <th class ="col-4">Price</th>
+            <th class="col-4">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Table rows will be dynamically populated -->
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Function to load products from API and populate the table
+            function loadProducts() {
+                $.ajax({
+                    url: '/api/ProductsApi',
+                    method: 'GET',
+                    success: function (data) {
+                        $('#productsTable tbody').empty(); // Clear existing table rows
+
+                        // Iterate through each product in the data array
+                        $.each(data, function (index, product) {
+                            // Append a new row to the table
+                            $('#productsTable tbody').append(`
+                                        <tr>
+                                            <td>${product.name}</td>
+                                            <td>${product.price}</td>
+                                            <td>
+                                                        <a href="/Products/Edit/${product.id}" class="btn btn-primary"><i class="bi bi-pencil-square"></i></a>
+                                                        <a href="/Products/Delete/${product.id}" class="btn btn-danger"><i class="bi bi-trash"></i></a>
+                                                        <a href="/Products/Details/${product.id}" class="btn btn-warning"><i class="bi bi-card-list"></i></a>
+                                            </td>
+                                        </tr>
+                                    `);
+                        });
+                    },
+                    error: function (error) {
+                        console.error('Error loading products:', error);
+                    }
+                });
+            }
+
+            // Initial load of products when the page is ready
+            loadProducts();
+        });
+    </script>
+}

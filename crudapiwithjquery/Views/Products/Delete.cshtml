@@ -1,0 +1,72 @@
+﻿@model crudapiwithjquery.Models.Product
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete Product</h1>
+
+<form id="deleteProductForm">
+    <input type="hidden" id="productId" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name" class="control-label">Name</label>
+        <input asp-for="Name" class="form-control" readonly />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Price" class="control-label">Price</label>
+        <input asp-for="Price" class="form-control" readonly />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var productId = $('#productId').val();
+
+            // Function to fetch product data from API and populate form
+            function fetchProductData() {
+                $.ajax({
+                    url: '/api/ProductsApi/' + productId,
+                    method: 'GET',
+                    success: function (data) {
+                        $('#Name').val(data.name); // Populate name field
+                        $('#Price').val(data.price); // Populate price field
+                    },
+                    error: function (error) {
+                        console.error('Error fetching product data:', error);
+                    }
+                });
+            }
+
+            // Initial call to fetch product data and populate form
+            fetchProductData();
+
+            // Form submission handler for delete
+            $('#deleteProductForm').submit(function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: '/api/ProductsApi/' + productId,
+                    method: 'DELETE',
+                    success: function () {
+                        window.location.href = '/Products'; // Redirect to products list on success
+                    },
+                    error: function (error) {
+                        console.error('Error deleting product:', error);
+                    }
+                });
+            });
+
+            // Make form fields readonly after data is fetched
+            $('#deleteProductForm input').prop('readonly', true);
+        });
+    </script>
+}
